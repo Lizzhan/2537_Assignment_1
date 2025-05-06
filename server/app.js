@@ -149,10 +149,12 @@ app.post("/signupSubmit", async (req, res) => {
     let hashedPassword = await bcrypt.hash(password, saltRounds);
 	
 	await userCollection.insertOne({username: username, email: email, password: hashedPassword});
-	console.log("user created");
-
-    let html = "successfully created user";
-    res.send(html);
+	req.session.authenticated = true;
+	req.session.username = username;
+	req.session.cookie.maxAge = expireTime;
+   	res.redirect('/members')
+	console.log("Redirecting")
+  
 
 })
 
