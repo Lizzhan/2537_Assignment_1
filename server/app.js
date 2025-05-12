@@ -53,6 +53,35 @@ app.use(session({
 }
 ));
 
+const validateSessionMember = (req, res, next) => {
+	if(req.session.authenticated != true){
+	res.redirect('/');
+	}else{
+		next();
+	}
+}
+
+const validateSessionAdmin = (req, res, next) => {
+	if(req.session.authenticated != true){
+		res.redirect('/login');
+	}else{
+		next();
+	}
+}
+const validateAdmin = (req, res, next) => {
+	if(req.session.user_type != 'admin'){
+		let html = `
+		<p>403 - You do not have the right authroization</p>
+		<a href="/">Go Back</a>
+		`;
+		res.status(403).send(html);
+		return;
+	}else{
+		next();
+	}
+}
+
+
 app.get("/", (req, res) => {
 	const authenticated = req.session.authenticated;
 	const username = req.session.username;
@@ -182,28 +211,12 @@ app.post("/loginSubmit", async (req, res)=>{
 	}
 })
 
-app.get("/admin", async (req, res) => {
-	if (req.session.authenticated === true
-	){
-		console.log(req.session.user_type)
-		if(req.session.user_type === 'admin'){
-			let users = await userCollection.find({}).toArray();
-			res.status(200).render('admin', {
-				users: users,
-				pageTitle: 'Admin'
-			})
-		}else{
-		let html = `
-		<p>403 - You do not have the right authroization</p>
-		<a href="/">Go Back</a>
-		`;
-		res.status(403).send(html);
-		return;
-	}
-	}else{
-		res.redirect('/login');
-	}
-
+app.get("/admin", validateSessionAdmin, validateAdmin, async (req, res) => {
+	let users = await userCollection.find({}).toArray();
+	res.status(200).render('admin', {
+		users: users,
+		pageTitle: 'Admin'
+	})
 })
 
 app.post("/makeAdmin/:username", async (req, res) => {
@@ -212,7 +225,7 @@ app.post("/makeAdmin/:username", async (req, res) => {
 	{ username: username },
 	{ $set: { user_type: "admin" } }
 	);
-	res.status(200);
+	res.status(200).redirect('/admin');
 })
 
 app.post("/makeUser/:username", async (req, res) => {
@@ -221,7 +234,7 @@ app.post("/makeUser/:username", async (req, res) => {
 	{ username: username },
 	{ $set: { user_type: "user" } }
 	);
-	res.status(200);
+	res.status(200).redirect('/admin');
 })
 
 app.post("/logout/", (req, res) => {
