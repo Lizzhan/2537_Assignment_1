@@ -1,0 +1,26 @@
+<%- include("partials/header") %>
+    <% if(authenticated) { %>
+        <div class="d-flex flex-row gap-3 d-flex flex-column justify-content-between align-items-center text-center p-5">
+            <h3>Hello, <%= username %><h3>
+            <form action="members" method="get" class="form">
+                <button type="submit" type="button" class="btn btn-primary">Go to memebrs area</button>
+            </form>
+            <form action="logout" method="post" class="form">
+                <button type="submit" type="button" class="btn btn-primary">Log Out</button>
+            </form>
+        </div>
+
+    <% } else{ %>
+        <div class="d-flex flex-row gap-3 d-flex flex-row justify-content-between align-items-center p-5">
+            <form action="login" method="get" class="form">
+                <button type="submit" type="button" class="btn btn-primary">log in</button>
+            </form>
+            <form action="signup" method="get" class="form">
+                <button type="submit" type="button" class="btn btn-primary">sign up</button>
+            </form>
+        </div>
+
+    <%} %>
+
+
+<%- include("partials/footer") %>

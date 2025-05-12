@@ -1,0 +1,21 @@
+<%- include("partials/header") %>
+<h2>Users</h2>
+<% users.forEach(user => { %>
+    <div class="d-flex flex-row p-2 justify-content-center align-items-center text-center gap-5">
+        <label>
+            <%= user.username %> (<%= user.user_type %>)
+        </label>
+        <div> 
+            <form action="/makeAdmin/<%= user.username %>" method="POST">
+            <button type="submit button" class="btn btn-danger">Promote To Admin</button>
+            </form>    
+        </div>  
+        <div>
+            <form action="/makeUser/<%= user.username %>" method="POST">
+            <button type="submit button" class="btn btn-success">Demote To User</button>
+            </form> 
+        </div>
+
+    </div>
+<% }) %>
+<%- include("partials/footer") %>
